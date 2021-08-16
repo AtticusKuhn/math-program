@@ -90,23 +90,11 @@
 /*!***************************!*\
   !*** ./src/math/index.ts ***!
   \***************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _msg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./msg */ \"./src/math/msg.ts\");\n\nconsole.log(_msg__WEBPACK_IMPORTED_MODULE_0__[\"msg\"])\n\n//# sourceURL=webpack:///./src/math/index.ts?");
-
-/***/ }),
-
-/***/ "./src/math/msg.ts":
-/*!*************************!*\
-  !*** ./src/math/msg.ts ***!
-  \*************************/
-/*! exports provided: msg */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"msg\", function() { return msg; });\nconst msg = \"hello\"\n\n//# sourceURL=webpack:///./src/math/msg.ts?");
+eval("\nclass Nop {\n    constructor(matches, name, vals = []) {\n        this.matches = matches;\n        this.name = name;\n        this.vals = vals;\n    }\n    parse(input) {\n        let cp_matches = this.matches;\n        let sampleRegex = new RegExp(cp_matches.map(m => {\n            if (typeof m === \"number\") {\n                return \"(.+?)\";\n            }\n            else {\n                return m.toString().substring(1, m.toString().length - 1);\n            }\n        }).join(\"\"));\n        console.log({ sampleRegex });\n        let found = input.match(sampleRegex);\n        if (!found) {\n            return null;\n        }\n        found = [...found].slice(1);\n        const mappedArgs = sequence(found.map(parse));\n        if (!mappedArgs) {\n            return null;\n        }\n        return {\n            value: this,\n            arguements: mappedArgs,\n        };\n    }\n}\nclass Plus extends Nop {\n    constructor() {\n        super([1, /\\+/, 2], \"plus\");\n        this.matches = [1, /\\+/, 2];\n    }\n}\nclass Minus extends Nop {\n    constructor() {\n        super([1, /-/, 2], \"minus\");\n        this.matches = [1, /-/, 2];\n    }\n}\nclass Digit extends Nop {\n    constructor() {\n        super([/[0-9]+/], \"digit\");\n        this.matches = [/[0-9]+/];\n        this.value = 0;\n    }\n    parse(input) {\n        this.value = parseInt(input);\n        return {\n            value: this,\n        };\n    }\n}\nconst ops = [Plus, Minus, Digit];\nconst id = (x) => x;\nconst sequence = (xs) => xs.every(id) ? xs : null;\nconst cls = ops.map(o => new o());\nconst parse = (input) => {\n    const a = cls.find(cl => cl.parse(input));\n    return a ? a.parse(input) : null;\n};\nconst simplifiy = (expr) => {\n    return expr;\n};\nconsole.log(JSON.stringify(parse(\"1+100\"), null, 4));\ntry {\n    Object.assign(window, { parse });\n}\ncatch (_a) { }\n\n\n//# sourceURL=webpack:///./src/math/index.ts?");
 
 /***/ })
 
