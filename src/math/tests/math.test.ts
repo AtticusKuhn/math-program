@@ -15,6 +15,6 @@ test('2+2=4', () => {
 test('17+32=49', () => {
     expect(parse("17+32")?.evaluate()).toBe(49);
 });
-test('17+32=49', () => {
-    expect(parse("17+32")?.evaluate()).toBe(49);
+test('15-8=7', () => {
+    expect(parse("15-8")?.evaluate()).toBe(7);
 });

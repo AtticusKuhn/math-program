@@ -88,9 +88,11 @@ class Divides extends Nop implements Op {
         return this.vals[0].evaluate() / this.vals[1].evaluate();
     }
     toString() {
-        return `${this.vals[0]}/${this.vals[1].evaluate()}`;
+        return `${this.vals[0]}/${this.vals[1]}`;
     }
     simplify() {
+        const [a, b] = reduceCommonFactors(this.vals[0], this.vals[1])
+        this.vals;
         return this;
     }
 }
@@ -125,3 +127,8 @@ class Digit extends Nop implements Op {
 // p.parse("1+1")
 
 export const ops = [Plus, Minus, Digit, Divides]
+
+function reduceCommonFactors(a: Nop, b: Nop): [Nop, Nop] {
+    const sa = a.simplify();
+    const sb = b.simplify();
+}
