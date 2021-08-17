@@ -28,7 +28,7 @@ export const parse = (input: string): Maybe<Expression> => {
 
 
 
-const simplifiy = (expr: Expression): Number => {
+const simplifiy = (expr: Expression): Expression => {
     return expr.evaluate()
 }
 // console.log('JSON.stringify(parse("1+100"), null, 4) \n', JSON.stringify(parse("1+100"), null, 4))

@@ -6,3 +6,4 @@ export const forceMaybe = <T>(m: Maybe<T>): T => {
         return m
     throw new Error("Tried to force a maybe failed as " + m);
 }
+export const constant = <T>(x: T) => () => x;
