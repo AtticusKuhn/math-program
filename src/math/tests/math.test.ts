@@ -25,6 +25,9 @@ test('10x+15x=25x', constant(
 test('2x+2=2x+2', constant(
     expect(parse("2x+2")?.evaluate().toString()).toBe("2x+2")
 ));
-test('2/4 = 1/2', constant(
-    expect(parse("2/4")?.simplify().toString()).toBe("1/2")
+test('2x+2+3x+7=5x+9', constant(
+    expect(parse("2x+2+3x+7")?.evaluate().toString()).toBe("5x+9")
 ));
+// test('2/4 = 1/2', constant(
+//     expect(parse("2/4")?.simplify().toString()).toBe("1/2")
+// ));

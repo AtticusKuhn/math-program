@@ -20,7 +20,6 @@ export abstract class Nop {
 
     }
     parse(input: string): Maybe<Expression> {
-        //console.log(this.matches)
         let cp_matches = this.matches;
         let sampleRegex = new RegExp(cp_matches.map(m => {
             if (typeof m === "number") {
@@ -29,13 +28,11 @@ export abstract class Nop {
                 return m.toString().substring(1, m.toString().length - 1);
             }
         }).join(""))
-        // console.log({ sampleRegex })
         let found = input.match(sampleRegex)
         if (!found) {
             return null;
         }
         found = [...found].slice(1)
-        // console.log("found", found)
         const mappedArgs = sequence(found.map(parse))
         if (!mappedArgs) {
             return null
@@ -59,8 +56,9 @@ export abstract class Nop {
 }
 class Plus extends Nop implements Op {
     matches: match = [1, /\+/, 2]
-    constructor() {
+    constructor(public a: Nop, public b: Nop) {
         super([1, /\+/, 2], "plus")
+        this.vals = [a, b];
     }
     toString() {
         return `${this.vals[0]}+${this.vals[1]}`;
@@ -68,21 +66,62 @@ class Plus extends Nop implements Op {
     evaluate(): Nop {
         const a = this.vals[0].evaluate()
         const b = this.vals[1].evaluate();
-        if (a instanceof Digit && b instanceof Digit)
-            return new Digit(a.value + b.value)
-
-        if (a instanceof Variable && b instanceof Variable) {
-            if (a.value.name === b.value.name) {
-                return new Variable({
-                    v: a.value.v + b.value.v,
-                    name: a.value.name
-                })
-            } else {
-                return this;
+        let x: Record<string, number> = {}
+        const fillX = (t: Nop) => {
+            if (t instanceof Digit)
+                x.digit = (x.digit ?? 0) + t.value;
+            if (t instanceof Variable)
+                x[t.value.name] = (x[t.value.name] ?? 0) + t.value.v;
+            if (t instanceof Plus) {
+                for (const p of t.vals) {
+                    fillX(p)
+                }
             }
         }
-        return this
+        fillX(a)
+        fillX(b)
+        if (Object.keys(x).length === 1) {
+            if (Object.keys(x)[0] === "digit") {
+                return new Digit(x[Object.keys(x)[0]])
+            } else {
+                return new Variable({ v: x[Object.keys(x)[0]], name: Object.keys(x)[0] })
+            }
+        } else {
+            let temp = (xs: Nop[]): Plus => xs.length === 2 ?
+                new Plus(xs[0], xs[1]) :
+                new Plus(xs[0], temp(xs.slice(1)))
+            let xs: Nop[] = []
+            for (const k of Object.keys(x)) {
+                if (k === "digit") {
+                    xs.push(new Digit(x[k]))
+                } else {
+                    xs.push(new Variable({
+                        v: x[k],
+                        name: k,
+                    }))
+                }
+            }
+            return temp(xs)
+        }
     }
+    // if (a instanceof Digit && b instanceof Digit)
+    //     return new Digit(a.value + b.value)
+
+    // if (a instanceof Variable && b instanceof Variable) {
+    //     if (a.value.name === b.value.name) {
+    //         return new Variable({
+    //             v: a.value.v + b.value.v,
+    //             name: a.value.name
+    //         })
+    //     } else {
+    //         return this;
+    //     }
+    // }
+    // if (a instanceof Plus) {
+
+    // }
+    // return this
+
 }
 class Minus extends Nop implements Op {
     matches: match = [1, /-/, 2]

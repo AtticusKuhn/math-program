@@ -4,7 +4,7 @@
 // }
 
 import { Expression, Nop, ops } from "./ops";
-import { Maybe, forceMaybe } from "./utils";
+import { Maybe } from "./utils";
 
 
 
@@ -12,6 +12,7 @@ import { Maybe, forceMaybe } from "./utils";
 
 
 export const parse = (input: string): Maybe<Expression> => {
+    //@ts-ignore
     const cls: Nop[] = ops.map(o => new o())
 
     const a = cls.find(cl => cl.parse(input))
@@ -31,8 +32,6 @@ export const parse = (input: string): Maybe<Expression> => {
 const simplifiy = (expr: Expression): Expression => {
     return expr.evaluate()
 }
-// console.log('JSON.stringify(parse("1+100"), null, 4) \n', JSON.stringify(parse("1+100"), null, 4))
-console.log('simplifiy(forceMaybe(parse("\\frac{2}{4}"))) \n', simplifiy(forceMaybe(parse("\\frac{2}{4}"))))
 
 try {
     Object.assign(window, { parse, simplifiy, ops })
