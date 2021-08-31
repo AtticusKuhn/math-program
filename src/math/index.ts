@@ -4,7 +4,7 @@
 // }
 
 import { Expression, Nop, ops } from "./ops";
-import { Maybe } from "./utils";
+import { Maybe, reduce } from "./utils";
 
 
 
@@ -15,8 +15,8 @@ export const parse = (input: string): Maybe<Expression> => {
     //@ts-ignore
     const cls: Nop[] = ops.map(o => new o())
 
-    const a = cls.find(cl => cl.parse(input))
-    return a ? a.parse(input) : null;
+    const a = cls.find(cl => cl.parse(input).hasValue())
+    return a ? a.parse(input) : new Maybe<Expression>(null);
     // for (const cl of cls) {
     //     let p = cl.parse(input)
     //     // cls.find
@@ -32,7 +32,7 @@ export const parse = (input: string): Maybe<Expression> => {
 const simplifiy = (expr: Expression): Expression => {
     return expr.evaluate()
 }
-
+reduce;
 try {
-    Object.assign(window, { parse, simplifiy, ops })
+    Object.assign(window, { parse, simplifiy, ops, reduce })
 } catch { }
