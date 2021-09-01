@@ -21,13 +21,14 @@ export abstract class Nop {
     }
     parse(input: string): Maybe<Expression> {
         let temp = this.matches.map(match => {
-            let sampleRegex = new RegExp(match.map(m => {
+            let sampleRegex = new RegExp(`^${match.map(m => {
                 if (typeof m === "number") {
                     return "(.+)"
                 } else {
                     return m.toString().substring(1, m.toString().length - 1);
                 }
-            }).join(""))
+            }).join("")}$`)
+            console.log("sampleRegex", sampleRegex)
             let found = input.match(sampleRegex)
             if (!found) {
                 return new Maybe<string[]>(null);
@@ -144,7 +145,7 @@ class Minus extends Nop implements Op {
 class Divides extends Nop implements Op {
     matches: match[] = [[/\\frac{/, 1, /}{/, 2, /}/], [1, /\//, 2]]
     constructor(public vals: Nop[] = []) {
-        super([[1, /-/, 2]], "minus", vals)
+        super([[/\\frac{/, 1, /}{/, 2, /}/], [1, /\//, 2]], "divides", vals)
     }
     evaluate(): Nop {
         const a = this.vals[0].evaluate()
@@ -172,6 +173,34 @@ class Divides extends Nop implements Op {
                 new Variable({ name: a.name, v: na }),
                 new Variable({ name: b.name, v: nb })
             ])
+        }
+        return this;
+    }
+}
+class Times extends Nop implements Op {
+    matches: match[] = [[1, /\*/, 2]]
+    constructor(public vals: Nop[] = []) {
+        super([[1, /\*/, 2]], "times", vals)
+    }
+    evaluate(): Nop {
+        const a = this.vals[0].evaluate()
+        const b = this.vals[1].evaluate();
+        if (a.name === "digit" && b.name === "digit") {
+            //@ts-ignore
+            return new Digit(a.value / b.value)
+        }
+        return this
+    }
+    toString() {
+        return `${this.vals[0]}/${this.vals[1]}`;
+    }
+    simplify(): Expression {
+        const a = this.vals[0].simplify()
+        const b = this.vals[1].simplify()
+        if (a instanceof Digit && b instanceof Digit) {
+
+            return new Digit(a.value * b.value)
+        } else if (a instanceof Variable && b instanceof Variable) {
         }
         return this;
     }
@@ -227,11 +256,24 @@ class Variable extends Nop implements Op {
         return new Maybe<Expression>(this)
     }
 }
-
+class Parenthesis extends Nop implements Op {
+    matches: match[] = [[/\(/, 1, /\)/]]
+    // value: number = 69;
+    constructor(public value: Nop) {
+        super([[/\(/, 1, /\)/]], "parenthesis")
+    }
+    toString() {
+        return `(${this.vals[0].toString()})`
+    }
+    evaluate() {
+        console.log`in parenthis, this.vals[0] ${this.vals[0]}`
+        return this.vals[0].evaluate();
+    }
+}
 // let p = new Plus()
 // p.parse("1+1")
 
-export const ops = [Divides, Plus, Minus, Variable, Digit]
+export const ops = [Parenthesis, Times, Divides, Plus, Minus, Variable, Digit]
 
 // function reduceCommonFactors(a: Nop, b: Nop): [Nop, Nop] {
 //     const sa = a.simplify();

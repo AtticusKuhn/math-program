@@ -11,10 +11,10 @@ global.console = {
     // map other methods that you want to use like console.table
 }
 test('reduce test', () => {
-    expect(reduce(10, 5)).toBe([2, 1]);
-    expect(reduce(72, 12)).toBe([6, 1]);
-    expect(reduce(16, 12)).toBe([3, 2]);
-    expect(reduce(57, 13)).toBe([57, 13]);
+    expect(reduce(10, 5)).toStrictEqual([2, 1]);
+    expect(reduce(72, 12)).toStrictEqual([6, 1]);
+    expect(reduce(16, 12)).toStrictEqual([4, 3]);
+    expect(reduce(57, 13)).toStrictEqual([57, 13]);
 });
 test('2+2=4', constant(
     expect(parse("2+2").force("2+2").evaluate().toString()).toBe("4")
@@ -39,4 +39,7 @@ test('2/4 = 1/2', constant(
 ));
 test('72/12 = 6', constant(
     expect(parse("72/12")?.force("72/12").simplify().toString()).toBe("6")
+));
+test('2*(2+3) = 10', constant(
+    expect(parse("2*(2+3)")?.force("2*(2+3)").simplify().toString()).toBe("10")
 ));
